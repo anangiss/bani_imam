@@ -684,12 +684,12 @@ async function doDelete(id) {
 // ══════════════════════════════════════
 // FORM TAMBAH / EDIT
 // ══════════════════════════════════════
-function switchTab(tab) {
+function switchTab(tab, skipRender=false) {
   ['pohon','tambah','admin'].forEach(t=>{
     document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
     document.getElementById('btn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab);
   });
-  if (tab==='tambah') renderFormTambah(null);
+  if (tab==='tambah' && !skipRender) renderFormTambah(null);
   if (tab==='admin') renderAdminLogin();
 }
 
@@ -743,7 +743,7 @@ async function doSubmitForm(editId) {
   if (res.status==='ok') switchTab('pohon');
 }
 
-function showEditForm(id) { closeModal(); renderFormTambah(members[id]); switchTab('tambah'); }
+function showEditForm(id) { closeModal(); switchTab('tambah', true); renderFormTambah(members[id]); }
 
 // ══════════════════════════════════════
 // ADMIN
