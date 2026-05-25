@@ -471,6 +471,7 @@ async function login() {
     const res = await callAPI({action:'verifyPassword', password:pw});
     if (res.status==='ok') {
       SESSION_PW = pw;
+      try { localStorage.setItem('silsilah_pw', pw); } catch(e) {}
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('mainApp').style.display='block';
       document.getElementById('appTitle').textContent = NAMA_KELUARGA;
@@ -498,6 +499,7 @@ async function loadData(silent=false) {
     } else if (res.status==='error' && silent) {
       // Password salah — paksa logout
       clearCache();
+      try { localStorage.removeItem('silsilah_pw'); } catch(e) {}
       location.reload();
     }
   } catch(e) { if (!silent) showToast('Gagal memuat data'); }
@@ -620,7 +622,7 @@ function createNodeEl(node, depth=0, delay=0) {
       hSvg.style.cssText='position:absolute;top:0;left:0;overflow:visible;pointer-events:none;';
       const hPath=document.createElementNS('http://www.w3.org/2000/svg','path');
       hPath.setAttribute('class','vine-descent');
-      hPath.setAttribute('d',`M ${NODE_W/2+CHILD_PAD} 0 Q ${totalW/2} 8 ${totalW-NODE_W/2-CHILD_PAD} 0`);
+      hPath.setAttribute('d',`M ${NODE_W/2+CHILD_PAD} 0 H ${totalW-NODE_W/2-CHILD_PAD}`);
       hPath.style.animationDelay=(delay+400)+'ms';
       hSvg.appendChild(hPath);
       children.forEach((_,i)=>{
@@ -839,6 +841,26 @@ function showToast(msg) {
 // ══════════════════════════════════════
 // INIT
 // ══════════════════════════════════════
+// Auto login kalau sudah pernah login
+(function autoLogin() {
+  try {
+    const savedPw = localStorage.getItem('silsilah_pw');
+    const cache = loadCache();
+    if (savedPw && cache) {
+      SESSION_PW = savedPw;
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('mainApp').style.display='block';
+      document.getElementById('appTitle').textContent = NAMA_KELUARGA;
+      document.getElementById('appSub').textContent = 'Silsilah · '+ASAL_DAERAH;
+      members = {};
+      cache.anggota.forEach(m => members[m.id]=m);
+      relasi = cache.silsilah;
+      renderTree();
+      loadData(true);
+    }
+  } catch(e) {}
+})();
+
 document.getElementById('loginBtn').onclick=login;
 document.getElementById('loginPw').onkeydown=e=>{if(e.key==='Enter')login();};
 document.getElementById('settBtn').onclick=()=>document.getElementById('settPanel').classList.toggle('open');
