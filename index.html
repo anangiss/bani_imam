@@ -432,10 +432,40 @@ function callAPI(params) {
   return fetch(API_URL+'?'+qs).then(r=>r.json());
 }
 
+// ── CACHE HELPERS ──
+const CACHE_KEY = 'silsilah_cache';
+function saveCache(anggota, silsilah) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({anggota, silsilah, ts: Date.now()})); } catch(e) {}
+}
+function loadCache() {
+  try { const c = localStorage.getItem(CACHE_KEY); return c ? JSON.parse(c) : null; } catch(e) { return null; }
+}
+function clearCache() {
+  try { localStorage.removeItem(CACHE_KEY); } catch(e) {}
+}
+
 async function login() {
   const pw = document.getElementById('loginPw').value.trim();
   const err = document.getElementById('loginErr');
   if (!pw) return;
+
+  // Cek cache dulu — kalau ada, langsung masuk tanpa tunggu server
+  const cache = loadCache();
+  if (cache) {
+    SESSION_PW = pw;
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('mainApp').style.display='block';
+    document.getElementById('appTitle').textContent = NAMA_KELUARGA;
+    document.getElementById('appSub').textContent = 'Silsilah · '+ASAL_DAERAH;
+    members = {};
+    cache.anggota.forEach(m => members[m.id]=m);
+    relasi = cache.silsilah;
+    renderTree();
+    // Verifikasi password & update data di background
+    loadData(true);
+    return;
+  }
+
   err.textContent = '✦ Memeriksa...';
   try {
     const res = await callAPI({action:'verifyPassword', password:pw});
@@ -454,17 +484,23 @@ async function login() {
   }
 }
 
-async function loadData() {
-  document.getElementById('treeRoot').innerHTML = '<div class="loading-msg">✦ Memuat silsilah... ✦</div>';
+async function loadData(silent=false) {
+  if (!silent) document.getElementById('treeRoot').innerHTML = '<div class="loading-msg">✦ Memuat silsilah... ✦</div>';
   try {
     const res = await callAPI({action:'getAnggota', password:SESSION_PW});
     if (res.status==='ok') {
       members = {};
       res.anggota.forEach(m => members[m.id]=m);
       relasi = res.silsilah;
+      saveCache(res.anggota, res.silsilah);
       renderTree();
+      if (silent) showToast('✦ Data diperbarui');
+    } else if (res.status==='error' && silent) {
+      // Password salah — paksa logout
+      clearCache();
+      location.reload();
     }
-  } catch(e) { showToast('Gagal memuat data'); }
+  } catch(e) { if (!silent) showToast('Gagal memuat data'); }
 }
 
 async function submitPending(tipe, data) {
