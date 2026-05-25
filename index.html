@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="theme-color" content="#1a0e04"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Silsilah Bani Imam</title>
+<link rel="manifest" href="manifest.json"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --sepia:#2a1a0a;
+  --parchment:#c8a96e;
+  --parchment-light:#e8d4a8;
+  --parchment-dark:#8b6914;
+  --ink:#1a0e04;
+  --gold:#d4a847;
+  --gold-glow:rgba(212,168,71,0.5);
+  --ember:#8b2500;
+  --ash:#3a3028;
+  --bg-solid:#2a1a0a;
+}
+body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;background:var(--bg-solid);}
+
+/* ── BACKGROUND SYSTEM ── */
+.app{min-height:100vh;position:relative;}
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.bg-layer canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0.18;}
+.bg-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:rgba(0,0,0,0.45);}
+
+/* ── SETTINGS PANEL ── */
+.settings-btn{
+  position:fixed;top:12px;right:12px;z-index:150;
+  background:rgba(26,14,4,0.85);border:1px solid rgba(212,168,71,0.4);
+  color:var(--gold);font-size:18px;width:36px;height:36px;
+  border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.settings-panel{
+  position:fixed;top:56px;right:12px;z-index:150;
+  background:rgba(20,10,2,0.97);border:1px solid rgba(212,168,71,0.4);
+  padding:14px;width:220px;
+  backdrop-filter:blur(8px);
+  display:none;
+}
+.settings-panel.open{display:block;}
+.sett-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--parchment-dark);text-transform:uppercase;margin-bottom:8px;}
+.swatch-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.2s;}
+.swatch.active{border-color:var(--gold);transform:scale(1.15);}
+.bg-btn{
+  display:block;width:100%;text-align:left;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(212,168,71,0.15);
+  color:var(--parchment-light);font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:1px;padding:7px 10px;cursor:pointer;margin-bottom:5px;
+  transition:all 0.2s;
+}
+.bg-btn:hover,.bg-btn.active{background:rgba(212,168,71,0.12);border-color:rgba(212,168,71,0.4);color:var(--gold);}
+
+/* ── LOGIN ── */
+.login-wrap{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:10;padding:20px;
+}
+.login-box{
+  background:linear-gradient(160deg,rgba(42,26,8,0.97),rgba(26,14,4,0.97));
+  border:1px solid var(--gold);
+  box-shadow:0 0 40px rgba(212,168,71,0.15);
+  padding:32px 24px;width:100%;max-width:320px;text-align:center;
+}
+.login-crest{font-size:40px;margin-bottom:12px;filter:drop-shadow(0 0 12px var(--gold-glow));}
+.login-title{font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:4px;text-shadow:0 0 16px var(--gold-glow);}
+.login-sub{font-size:12px;color:var(--parchment-dark);font-style:italic;margin-bottom:24px;}
+.login-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-bottom:20px;}
+.login-input{
+  width:100%;background:rgba(26,14,4,0.8);border:1px solid rgba(212,168,71,0.3);
+  color:var(--parchment-light);padding:10px 14px;font-family:'IM Fell English',serif;
+  font-size:15px;outline:none;text-align:center;letter-spacing:3px;margin-bottom:10px;
+}
+.login-input:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(212,168,71,0.15);}
+.login-btn{
+  width:100%;padding:12px;background:linear-gradient(135deg,rgba(212,168,71,0.2),rgba(212,168,71,0.1));
+  border:1px solid var(--gold);color:var(--gold);font-family:'Cinzel',serif;
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all 0.3s;margin-bottom:8px;
+}
+.login-btn:hover{background:rgba(212,168,71,0.25);box-shadow:0 0 16px rgba(212,168,71,0.2);}
+.login-err{color:#d46a50;font-size:12px;font-style:italic;min-height:18px;}
+
+/* ── HEADER ── */
+.header{text-align:center;padding:24px 16px 16px;position:relative;z-index:1;}
+.header-crest{font-size:28px;margin-bottom:6px;filter:drop-shadow(0 0 12px var(--gold-glow));animation:floatCrest 4s ease-in-out infinite;}
+@keyframes floatCrest{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.header-title{font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--gold);letter-spacing:2px;text-shadow:0 0 20px var(--gold-glow);}
+.header-sub{font-size:12px;color:var(--parchment);font-style:italic;margin-top:3px;opacity:0.8;}
+.header-rule{display:flex;align-items:center;gap:8px;margin:10px auto 0;max-width:240px;}
+.header-rule-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+
+/* ── TREE ── */
+.tree-scroll{overflow:auto;padding:12px 20px 100px;position:relative;z-index:1;}
+.tree-root{display:flex;flex-direction:column;align-items:center;min-width:max-content;margin:0 auto;}
+.node-wrap{display:flex;flex-direction:column;align-items:center;}
+.couple-group{display:flex;align-items:flex-end;position:relative;}
+.portrait{display:flex;flex-direction:column;align-items:center;width:80px;cursor:pointer;position:relative;animation:portraitReveal 0.7s ease forwards;opacity:0;}
+@keyframes portraitReveal{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
+.portrait-frame{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
+.portrait:hover .portrait-frame{transform:scale(1.1);filter:brightness(1.2);}
+.portrait-frame.male{background:radial-gradient(circle at 35% 35%,#5a8fc5,#1e3a5a);box-shadow:0 0 0 2px #8ab4d4,0 0 0 4px #2a5a8a,0 0 16px rgba(90,143,197,0.5);}
+.portrait-frame.female{background:radial-gradient(circle at 35% 35%,#c57a9a,#5a1e3a);box-shadow:0 0 0 2px #d4a0b8,0 0 0 4px #8a2a5a,0 0 16px rgba(197,122,154,0.5);}
+.portrait-frame.deceased{background:radial-gradient(circle at 35% 35%,#4a3828,#1a0e04);box-shadow:0 0 0 2px #3a2818,0 0 0 4px #1a0e04,0 0 8px rgba(139,37,0,0.4);filter:grayscale(0.7) brightness(0.7);}
+.portrait-initial{font-family:'Cinzel',serif;font-size:22px;font-weight:600;color:rgba(255,255,255,0.9);text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+.portrait-frame.deceased .portrait-initial{color:rgba(200,160,80,0.6);animation:flicker 3s ease-in-out infinite;}
+@keyframes flicker{0%,100%{opacity:0.6;}50%{opacity:0.4;}75%{opacity:0.7;}}
+.portrait-name{font-family:'Cinzel',serif;font-size:8px;color:var(--parchment-light);text-align:center;margin-top:5px;line-height:1.3;max-width:72px;word-break:break-word;}
+.portrait-year{font-size:8px;color:var(--parchment-dark);font-style:italic;margin-top:2px;}
+.portrait-dagger{font-size:9px;color:var(--ember);margin-top:1px;}
+.connector-svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;}
+.vine-couple{stroke:var(--gold);stroke-width:1.5;fill:none;filter:drop-shadow(0 0 3px var(--gold-glow));}
+.vine-descent{stroke:var(--parchment-dark);stroke-width:1.5;fill:none;stroke-dasharray:400;stroke-dashoffset:400;animation:drawVine 0.8s ease forwards;}
+@keyframes drawVine{to{stroke-dashoffset:0;}}
+.vine-leaf{fill:rgba(80,120,40,0.6);}
+.children-area{display:flex;flex-direction:column;align-items:center;position:relative;}
+.children-row{display:flex;align-items:flex-start;position:relative;}
+.child-slot{display:flex;flex-direction:column;align-items:center;padding:0 6px;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,5,0,0.88);display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;backdrop-filter:blur(6px);animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{background:linear-gradient(160deg,#2a1a08,#1a0e04);border:1px solid var(--gold);box-shadow:0 0 40px rgba(212,168,71,0.15);padding:28px 24px;width:100%;max-width:340px;position:relative;animation:slideUp 0.3s ease;max-height:85vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-close{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--parchment-dark);font-size:18px;cursor:pointer;}
+.modal-close:hover{color:var(--gold);}
+.modal-name{font-family:'Cinzel Decorative',serif;font-size:14px;color:var(--gold);text-align:center;margin-bottom:16px;line-height:1.4;text-shadow:0 0 12px var(--gold-glow);}
+.modal-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-bottom:16px;}
+.detail-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(212,168,71,0.1);font-size:13px;}
+.detail-label{color:var(--parchment-dark);font-style:italic;}
+.detail-value{color:var(--parchment-light);text-align:right;max-width:58%;}
+.modal-epitaph{text-align:center;margin-top:14px;color:var(--ember);font-style:italic;font-size:12px;opacity:0.8;}
+.modal-actions{display:flex;gap:8px;margin-top:16px;}
+.modal-edit-btn,.modal-del-btn{flex:1;padding:8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid;background:transparent;transition:all 0.2s;}
+.modal-edit-btn{color:var(--gold);border-color:rgba(212,168,71,0.5);}
+.modal-edit-btn:hover{background:rgba(212,168,71,0.15);}
+.modal-del-btn{color:#d46a50;border-color:#8b4030;}
+.modal-del-btn:hover{background:rgba(139,37,0,0.2);}
+
+/* ── FORM ── */
+.page{padding:16px 16px 100px;max-width:440px;margin:0 auto;position:relative;z-index:1;}
+.page-title{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);text-align:center;margin-bottom:18px;text-shadow:0 0 12px var(--gold-glow);}
+.form-group{margin-bottom:12px;}
+.form-label{display:block;font-family:'Cinzel',serif;font-size:10px;color:var(--parchment-dark);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.form-input,.form-select{width:100%;background:rgba(26,14,4,0.8);border:1px solid rgba(212,168,71,0.3);color:var(--parchment-light);padding:9px 12px;font-family:'IM Fell English',serif;font-size:14px;outline:none;transition:border-color 0.3s;}
+.form-input:focus,.form-select:focus{border-color:var(--gold);box-shadow:0 0 10px rgba(212,168,71,0.15);}
+.form-select option{background:#1a0e04;}
+.form-hint{font-size:11px;color:var(--parchment-dark);font-style:italic;margin-top:6px;}
+.btn-submit{width:100%;padding:12px;background:linear-gradient(135deg,rgba(212,168,71,0.2),rgba(212,168,71,0.1));border:1px solid var(--gold);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:16px;transition:all 0.3s;}
+.btn-submit:hover{background:rgba(212,168,71,0.25);box-shadow:0 0 16px rgba(212,168,71,0.2);}
+.loading-msg{text-align:center;color:var(--parchment-dark);font-style:italic;font-size:13px;padding:40px;}
+
+/* ── ADMIN ── */
+.pin-wrap{text-align:center;padding:40px 0;}
+.pin-title{font-family:'Cinzel',serif;font-size:11px;color:var(--parchment-dark);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.pending-card{background:rgba(26,14,4,0.7);border:1px solid rgba(212,168,71,0.25);padding:14px;margin-bottom:10px;}
+.ptag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;display:inline-block;margin-bottom:8px;}
+.ptag.tambah{background:rgba(40,120,40,0.2);color:#6dba6d;border:1px solid #4a8a4a;}
+.ptag.edit{background:rgba(212,168,71,0.15);color:var(--gold);border:1px solid var(--gold);}
+.ptag.hapus{background:rgba(139,37,0,0.2);color:#d46a50;border:1px solid #8b4030;}
+.pending-name{font-family:'Cinzel',serif;font-size:13px;color:var(--parchment-light);margin-bottom:3px;}
+.pending-meta{font-size:11px;color:var(--parchment-dark);font-style:italic;}
+.pending-btns{display:flex;gap:8px;margin-top:10px;}
+.btn-ok,.btn-no{flex:1;padding:7px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid;background:transparent;transition:all 0.2s;}
+.btn-ok{color:#6dba6d;border-color:#4a8a4a;}
+.btn-ok:hover{background:rgba(40,120,40,0.2);}
+.btn-no{color:#d46a50;border-color:#8b4030;}
+.btn-no:hover{background:rgba(139,37,0,0.2);}
+.empty-msg{text-align:center;padding:40px;color:var(--parchment-dark);font-style:italic;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#2a1a08,#1a0e04);border:1px solid var(--gold);color:var(--gold);padding:10px 22px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;z-index:300;white-space:nowrap;box-shadow:0 0 20px rgba(212,168,71,0.3);animation:toastIn 0.3s ease;}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,5,0,0.96);border-top:1px solid rgba(212,168,71,0.3);display:flex;backdrop-filter:blur(10px);z-index:100;}
+.bnav-btn{flex:1;padding:10px 8px;background:none;border:none;color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.3s;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;}
+.bnav-btn.active{color:var(--gold);}
+.bnav-icon{font-size:16px;line-height:1;}
+.badge{background:var(--ember);color:white;border-radius:50%;width:14px;height:14px;font-size:8px;display:flex;align-items:center;justify-content:center;position:absolute;top:4px;right:14px;font-family:'Cinzel',serif;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <canvas id="bgCanvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.16;"></canvas>
+  <div class="bg-overlay" id="bgOverlay"></div>
+
+  <!-- Settings Button -->
+  <button class="settings-btn" id="settBtn" title="Tema">⚙</button>
+  <div class="settings-panel" id="settPanel">
+    <div class="sett-title">Warna Latar</div>
+    <div class="swatch-row" id="colorSwatches"></div>
+    <div class="sett-title">Motif Latar</div>
+    <div id="bgBtns"></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginScreen" class="login-wrap">
+    <div class="login-box">
+      <div class="login-crest">⚜</div>
+      <div class="login-title">Silsilah Keluarga</div>
+      <div class="login-sub">Bani Imam · Jombang</div>
+      <div class="login-rule"></div>
+      <input class="login-input" type="password" id="loginPw" placeholder="••••••" autocomplete="off"/>
+      <button class="login-btn" id="loginBtn">✦ Masuk ✦</button>
+      <div class="login-err" id="loginErr"></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="mainApp" style="display:none;">
+    <div class="header">
+      <div class="header-crest">⚜</div>
+      <div class="header-title" id="appTitle">Silsilah Keluarga</div>
+      <div class="header-sub" id="appSub">Bani Imam · Jombang</div>
+      <div class="header-rule">
+        <div class="header-rule-line"></div>
+        <span style="color:var(--gold);font-size:10px;">❧</span>
+        <div class="header-rule-line"></div>
+      </div>
+    </div>
+
+    <div id="tabPohon" style="display:block;">
+      <div class="tree-scroll"><div class="tree-root" id="treeRoot"><div class="loading-msg">✦ Memuat silsilah... ✦</div></div></div>
+    </div>
+    <div id="tabTambah" style="display:none;"></div>
+    <div id="tabAdmin" style="display:none;"></div>
+
+    <!-- Modal -->
+    <div id="modal" style="display:none;"></div>
+    <div id="toast" class="toast" style="display:none;"></div>
+
+    <div class="bnav">
+      <button class="bnav-btn active" id="btnPohon" onclick="switchTab('pohon')">
+        <span class="bnav-icon">🌿</span>Pohon
+      </button>
+      <button class="bnav-btn" id="btnTambah" onclick="switchTab('tambah')">
+        <span class="bnav-icon">✦</span>Tambah
+      </button>
+      <button class="bnav-btn" id="btnAdmin" onclick="switchTab('admin')" style="position:relative;">
+        <span class="badge" id="adminBadge" style="display:none;">0</span>
+        <span class="bnav-icon">🔐</span>Admin
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// CONFIG — GANTI DI SINI
+// ══════════════════════════════════════
+const API_URL = 'https://script.google.com/macros/s/AKfycbyFybvTWjahLvfojsLXAnvC0gCMYUySJw7arZ5rbLI5wuI8grZ4NEsbD12Up8bT6T41-A/exec';
+const NAMA_KELUARGA = 'Bani Imam';
+const ASAL_DAERAH   = 'Jombang';
+
+// ══════════════════════════════════════
+// TEMA
+// ══════════════════════════════════════
+const COLORS = [
+  {name:'Mahoni Gelap', val:'#2a1a0a'},
+  {name:'Coklat Tua',   val:'#3b1f0a'},
+  {name:'Hijau Lumut',  val:'#1a2e10'},
+  {name:'Ungu Gelap',   val:'#160a22'},
+  {name:'Putih Bersih', val:'#ffffff'},
+  {name:'Krem Lembut',  val:'#f5f0e8'},
+  {name:'Putih Susu',   val:'#f8f4ed'},
+  {name:'Biru Langit',  val:'#e8f0fc'},
+  {name:'Hijau Mint',   val:'#e8f5ee'},
+  {name:'Putih Hijau',  val:'#f0faf4'},
+];
+const BACKGROUNDS = [
+  {name:'Polos',         key:'none'},
+  {name:'Bunga Melati',  key:'flowers'},
+  {name:'Ranting Pohon', key:'branches'},
+  {name:'Bintang Langit',key:'stars'},
+  {name:'Batik Kawung',  key:'batik'},
+  {name:'Daun Jatuh',    key:'leaves'},
+];
+
+let currentColor = '#2a1a0a';
+let currentBg = 'none';
+let bgAnimFrame = null;
+
+function initTheme() {
+  // color swatches
+  const row = document.getElementById('colorSwatches');
+  COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (c.val === currentColor ? ' active' : '');
+    s.style.background = c.val;
+    s.title = c.name;
+    s.onclick = () => {
+      currentColor = c.val;
+      document.documentElement.style.setProperty('--bg-solid', c.val);
+      document.body.style.background = c.val;
+      row.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+      s.classList.add('active');
+    };
+    row.appendChild(s);
+  });
+  // bg buttons
+  const btns = document.getElementById('bgBtns');
+  BACKGROUNDS.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'bg-btn' + (b.key === currentBg ? ' active' : '');
+    btn.textContent = b.name;
+    btn.onclick = () => {
+      currentBg = b.key;
+      btns.querySelectorAll('.bg-btn').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      startBgAnimation(b.key);
+    };
+    btns.appendChild(btn);
+  });
+}
+
+function startBgAnimation(key) {
+  if (bgAnimFrame) cancelAnimationFrame(bgAnimFrame);
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (key === 'none') return;
+
+  const W = canvas.width, H = canvas.height;
+  let particles = [];
+  let t = 0;
+
+  if (key === 'flowers') {
+    for (let i = 0; i < 30; i++) particles.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*18+8, a:Math.random()*Math.PI*2, speed:Math.random()*0.003+0.001, petals:5+Math.floor(Math.random()*3)});
+    function draw() {
+      ctx.clearRect(0,0,W,H);
+      particles.forEach(p => {
+        p.a += p.speed;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a);
+        for (let i=0;i<p.petals;i++) {
+          ctx.save(); ctx.rotate(i*(Math.PI*2/p.petals));
+          ctx.beginPath(); ctx.ellipse(0,-p.r*0.6,p.r*0.3,p.r*0.6,0,0,Math.PI*2);
+          ctx.fillStyle='rgba(212,168,71,0.5)'; ctx.fill(); ctx.restore();
+        }
+        ctx.beginPath(); ctx.arc(0,0,p.r*0.25,0,Math.PI*2);
+        ctx.fillStyle='rgba(255,220,100,0.7)'; ctx.fill();
+        ctx.restore();
+      });
+      bgAnimFrame = requestAnimationFrame(draw);
+    }
+    draw();
+  } else if (key === 'branches') {
+    function drawBranch(ctx, x, y, len, angle, depth) {
+      if (depth===0||len<4) return;
+      const ex = x+Math.cos(angle)*len, ey = y+Math.sin(angle)*len;
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(ex,ey);
+      ctx.strokeStyle=`rgba(180,120,40,${0.15+depth*0.06})`; ctx.lineWidth=depth*0.6; ctx.stroke();
+      drawBranch(ctx,ex,ey,len*0.68,angle-0.4+Math.random()*0.2,depth-1);
+      drawBranch(ctx,ex,ey,len*0.68,angle+0.4-Math.random()*0.2,depth-1);
+      if (depth<=2) {
+        ctx.beginPath(); ctx.arc(ex,ey,3,0,Math.PI*2);
+        ctx.fillStyle='rgba(120,180,60,0.4)'; ctx.fill();
+      }
+    }
+    ctx.clearRect(0,0,W,H);
+    for (let i=0;i<4;i++) drawBranch(ctx,W*0.2*i+W*0.1,H,H*0.28,-Math.PI/2+Math.random()*0.3-0.15,7);
+    // no animation, static
+  } else if (key === 'stars') {
+    for (let i=0;i<120;i++) particles.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+0.3,twinkle:Math.random()*Math.PI*2,speed:Math.random()*0.04+0.01});
+    function draw() {
+      ctx.clearRect(0,0,W,H);
+      particles.forEach(p => {
+        p.twinkle+=p.speed;
+        const alpha=0.3+0.5*Math.abs(Math.sin(p.twinkle));
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(212,168,71,${alpha})`; ctx.fill();
+      });
+      bgAnimFrame = requestAnimationFrame(draw);
+    }
+    draw();
+  } else if (key === 'batik') {
+    const sz=60;
+    ctx.clearRect(0,0,W,H);
+    for (let x=0;x<W+sz;x+=sz) for (let y=0;y<H+sz;y+=sz) {
+      ctx.save(); ctx.translate(x,y);
+      ctx.beginPath(); ctx.arc(0,0,sz*0.38,0,Math.PI*2); ctx.strokeStyle='rgba(212,168,71,0.2)'; ctx.lineWidth=1; ctx.stroke();
+      ctx.beginPath(); ctx.arc(0,0,sz*0.18,0,Math.PI*2); ctx.stroke();
+      for (let i=0;i<4;i++) {
+        ctx.save(); ctx.rotate(i*Math.PI/2);
+        ctx.beginPath(); ctx.ellipse(sz*0.38,0,sz*0.12,sz*0.06,0,0,Math.PI*2);
+        ctx.strokeStyle='rgba(212,168,71,0.15)'; ctx.stroke(); ctx.restore();
+      }
+      ctx.restore();
+    }
+    // static
+  } else if (key === 'leaves') {
+    for (let i=0;i<40;i++) particles.push({x:Math.random()*W,y:-Math.random()*H,vy:Math.random()*0.6+0.3,vx:Math.random()*0.4-0.2,r:Math.random()*12+6,a:Math.random()*Math.PI*2,va:Math.random()*0.02-0.01});
+    function draw() {
+      ctx.clearRect(0,0,W,H);
+      particles.forEach(p => {
+        p.y+=p.vy; p.x+=p.vx; p.a+=p.va;
+        if (p.y>H+20) { p.y=-20; p.x=Math.random()*W; }
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a);
+        ctx.beginPath(); ctx.ellipse(0,0,p.r*0.4,p.r,0,0,Math.PI*2);
+        ctx.fillStyle='rgba(80,140,40,0.35)'; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(0,-p.r); ctx.lineTo(0,p.r);
+        ctx.strokeStyle='rgba(60,110,30,0.3)'; ctx.lineWidth=0.8; ctx.stroke();
+        ctx.restore();
+      });
+      bgAnimFrame = requestAnimationFrame(draw);
+    }
+    draw();
+  }
+}
+
+// ══════════════════════════════════════
+// API
+// ══════════════════════════════════════
+let SESSION_PW = '';
+let members = {};
+let relasi = [];
+let pendingList = [];
+let adminOpen = false;
+
+function callAPI(params) {
+  const qs = Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+  return fetch(API_URL+'?'+qs).then(r=>r.json());
+}
+
+async function login() {
+  const pw = document.getElementById('loginPw').value.trim();
+  const err = document.getElementById('loginErr');
+  if (!pw) return;
+  err.textContent = '✦ Memeriksa...';
+  try {
+    const res = await callAPI({action:'verifyPassword', password:pw});
+    if (res.status==='ok') {
+      SESSION_PW = pw;
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('mainApp').style.display='block';
+      document.getElementById('appTitle').textContent = NAMA_KELUARGA;
+      document.getElementById('appSub').textContent = 'Silsilah · '+ASAL_DAERAH;
+      loadData();
+    } else {
+      err.textContent = '✕ '+res.message;
+    }
+  } catch(e) {
+    err.textContent = '✕ Gagal terhubung ke server';
+  }
+}
+
+async function loadData() {
+  document.getElementById('treeRoot').innerHTML = '<div class="loading-msg">✦ Memuat silsilah... ✦</div>';
+  try {
+    const res = await callAPI({action:'getAnggota', password:SESSION_PW});
+    if (res.status==='ok') {
+      members = {};
+      res.anggota.forEach(m => members[m.id]=m);
+      relasi = res.silsilah;
+      renderTree();
+    }
+  } catch(e) { showToast('Gagal memuat data'); }
+}
+
+async function submitPending(tipe, data) {
+  const res = await callAPI({action:'submitPending', password:SESSION_PW, tipe, data:JSON.stringify(data)});
+  return res;
+}
+
+async function loadPending() {
+  const pinVal = document.getElementById('adminPinInput')?.value || '';
+  if (!pinVal) return;
+  const res = await callAPI({action:'getPending', pin:pinVal});
+  if (res.status==='ok') {
+    pendingList = res.pending;
+    updateBadge();
+    renderAdmin(pinVal);
+  } else {
+    showToast(res.message);
+  }
+}
+
+async function approve(idPending, pin) {
+  const res = await callAPI({action:'approvePending', pin, idPending});
+  if (res.status==='ok') { showToast('✦ Disetujui'); loadPending(); loadData(); }
+  else showToast(res.message);
+}
+
+async function reject(idPending, pin) {
+  const res = await callAPI({action:'rejectPending', pin, idPending});
+  if (res.status==='ok') { showToast('Ditolak'); loadPending(); }
+  else showToast(res.message);
+}
+
+// ══════════════════════════════════════
+// TREE
+// ══════════════════════════════════════
+const NODE_W=80, COUPLE_GAP=28, CHILD_PAD=6, V_STEM=40;
+
+function buildTree() {
+  const childSet = new Set(relasi.map(r=>r.idAnak));
+  const coupleMap = {};
+  relasi.forEach(r => {
+    const key=r.idAyah+'|'+r.idIbu;
+    if (!coupleMap[key]) coupleMap[key]={ayahId:r.idAyah,ibuId:r.idIbu,anakIds:[]};
+    coupleMap[key].anakIds.push(r.idAnak);
+  });
+
+  function nodeFor(id, visited=new Set()) {
+    if (visited.has(id)) return null;
+    visited.add(id);
+    const m = members[id]; if (!m) return null;
+    const couple = Object.values(coupleMap).find(c=>c.ayahId===id||c.ibuId===id);
+    const spouseId = couple?(couple.ayahId===id?couple.ibuId:couple.ayahId):null;
+    return {
+      member:m, spouseId, spouse:spouseId?members[spouseId]:null,
+      children:(couple?couple.anakIds:[]).map(cid=>nodeFor(cid,new Set(visited))).filter(Boolean)
+    };
+  }
+
+  const roots = Object.keys(members).filter(id=>!childSet.has(id));
+  const rootAyahs = roots.filter(id=>Object.values(coupleMap).some(c=>c.ayahId===id));
+  const rootSingles = roots.filter(id=>!Object.values(coupleMap).some(c=>c.ayahId===id||c.ibuId===id));
+  return [...rootAyahs,...rootSingles].map(id=>nodeFor(id));
+}
+
+function renderTree() {
+  const root = document.getElementById('treeRoot');
+  if (!Object.keys(members).length) { root.innerHTML='<div class="loading-msg">✦ Belum ada data anggota ✦</div>'; return; }
+  const tree = buildTree();
+  root.innerHTML = '';
+  tree.forEach((node,i)=>{ root.appendChild(createNodeEl(node,0,i*150)); });
+}
+
+function curvePath(x1,y1,x2,y2) {
+  return `M ${x1} ${y1} C ${x1} ${y1+(y2-y1)*0.6}, ${x2} ${y2-(y2-y1)*0.6}, ${x2} ${y2}`;
+}
+
+function createNodeEl(node, depth=0, delay=0) {
+  const {member,spouse,children} = node;
+  const wrap = document.createElement('div'); wrap.className='node-wrap';
+  const coupleW = NODE_W + (spouse?COUPLE_GAP+NODE_W:0);
+  const cg = document.createElement('div'); cg.className='couple-group';
+
+  if (spouse) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width',coupleW); svg.setAttribute('height',80);
+    svg.style.cssText='position:absolute;top:0;left:0;pointer-events:none;overflow:visible;';
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class','vine-couple');
+    path.setAttribute('d',`M ${NODE_W/2} 30 Q ${coupleW/2} 24 ${NODE_W+COUPLE_GAP+NODE_W/2} 30`);
+    const diam = document.createElementNS('http://www.w3.org/2000/svg','text');
+    diam.setAttribute('x',coupleW/2); diam.setAttribute('y',27);
+    diam.setAttribute('text-anchor','middle'); diam.setAttribute('font-size','8');
+    diam.setAttribute('fill','var(--gold)'); diam.textContent='◆';
+    svg.appendChild(path); svg.appendChild(diam); cg.appendChild(svg);
+  }
+
+  cg.appendChild(createPortraitEl(member,delay));
+  if (spouse) { const gap=document.createElement('div'); gap.style.width=COUPLE_GAP+'px'; cg.appendChild(gap); cg.appendChild(createPortraitEl(spouse,delay+100)); }
+  wrap.appendChild(cg);
+
+  if (children && children.length) {
+    const area = document.createElement('div'); area.className='children-area';
+    const stemSvg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    stemSvg.setAttribute('width','2'); stemSvg.setAttribute('height',V_STEM);
+    stemSvg.style.overflow='visible';
+    const stemP = document.createElementNS('http://www.w3.org/2000/svg','path');
+    stemP.setAttribute('class','vine-descent');
+    stemP.setAttribute('d',`M 1 0 C 1 ${V_STEM*0.4}, 1 ${V_STEM*0.6}, 1 ${V_STEM}`);
+    stemP.style.animationDelay=(delay+300)+'ms';
+    stemSvg.appendChild(stemP); area.appendChild(stemSvg);
+
+    const row = document.createElement('div'); row.className='children-row'; row.style.position='relative';
+    if (children.length>1) {
+      const totalW=children.length*(NODE_W+CHILD_PAD*2);
+      const hSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      hSvg.setAttribute('width',totalW); hSvg.setAttribute('height',V_STEM);
+      hSvg.style.cssText='position:absolute;top:0;left:0;overflow:visible;pointer-events:none;';
+      const hPath=document.createElementNS('http://www.w3.org/2000/svg','path');
+      hPath.setAttribute('class','vine-descent');
+      hPath.setAttribute('d',`M ${NODE_W/2+CHILD_PAD} 0 Q ${totalW/2} 8 ${totalW-NODE_W/2-CHILD_PAD} 0`);
+      hPath.style.animationDelay=(delay+400)+'ms';
+      hSvg.appendChild(hPath);
+      children.forEach((_,i)=>{
+        const cx=(NODE_W/2)+CHILD_PAD+i*(NODE_W+CHILD_PAD*2);
+        const dp=document.createElementNS('http://www.w3.org/2000/svg','path');
+        dp.setAttribute('class','vine-descent');
+        dp.setAttribute('d',curvePath(cx,0,cx,V_STEM));
+        dp.style.animationDelay=(delay+450+i*60)+'ms';
+        hSvg.appendChild(dp);
+      });
+      row.appendChild(hSvg);
+    }
+
+    children.forEach((child,i)=>{
+      const slot=document.createElement('div'); slot.className='child-slot';
+      if (children.length===1) {
+        const ss=document.createElementNS('http://www.w3.org/2000/svg','svg');
+        ss.setAttribute('width','2'); ss.setAttribute('height',V_STEM); ss.style.overflow='visible';
+        const sp=document.createElementNS('http://www.w3.org/2000/svg','path');
+        sp.setAttribute('class','vine-descent'); sp.setAttribute('d',`M 1 0 C 1 ${V_STEM*0.4}, 1 ${V_STEM*0.6}, 1 ${V_STEM}`);
+        sp.style.animationDelay=(delay+400)+'ms'; ss.appendChild(sp); slot.appendChild(ss);
+      } else { const sp=document.createElement('div'); sp.style.height=V_STEM+'px'; slot.appendChild(sp); }
+      slot.appendChild(createNodeEl(child,depth+1,delay+500+i*100));
+      row.appendChild(slot);
+    });
+    area.appendChild(row); wrap.appendChild(area);
+  }
+  return wrap;
+}
+
+function createPortraitEl(member, delay=0) {
+  const dead=!!member.tahunMeninggal;
+  const cls=dead?'deceased':(member.gender==='L'?'male':'female');
+  const shortName=member.nama.split(' ').slice(0,2).join(' ');
+  const el=document.createElement('div'); el.className='portrait'; el.style.animationDelay=delay+'ms';
+  el.innerHTML=`<div class="portrait-frame ${cls}"><span class="portrait-initial">${member.nama.charAt(0)}</span></div><div class="portrait-name">${shortName}</div><div class="portrait-year">${member.tahunLahir||'?'}${member.tahunMeninggal?' – '+member.tahunMeninggal:''}</div>${dead?'<div class="portrait-dagger">✝</div>':''}`;
+  el.onclick=()=>showModal(member);
+  return el;
+}
+
+// ══════════════════════════════════════
+// MODAL DETAIL
+// ══════════════════════════════════════
+function showModal(member) {
+  const dead=!!member.tahunMeninggal;
+  const cls=dead?'deceased':(member.gender==='L'?'male':'female');
+  const modal=document.getElementById('modal');
+  modal.style.display='block';
+  modal.innerHTML=`
+  <div class="modal-overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="portrait-frame ${cls}" style="width:72px;height:72px;margin:0 auto 14px;font-family:Cinzel,serif;font-size:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;">${member.nama.charAt(0)}</div>
+      <div class="modal-name">${member.nama}</div>
+      <div class="modal-rule"></div>
+      ${[
+        ['Jenis Kelamin', member.gender==='L'?'Laki-laki':'Perempuan'],
+        ['Tahun Lahir', member.tahunLahir||'–'],
+        ['Tahun Meninggal', member.tahunMeninggal||'–'],
+        ['Asal', member.desa||'–'],
+        ['No. Kontak', member.kontak||'–'],
+        ['Catatan', member.catatan||'–'],
+      ].map(([l,v])=>`<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value">${v}</span></div>`).join('')}
+      ${dead?'<div class="modal-epitaph">✦ Semoga husnul khatimah ✦</div>':''}
+      <div class="modal-actions">
+        <button class="modal-edit-btn" onclick="showEditForm('${member.id}')">✎ Edit</button>
+        <button class="modal-del-btn" onclick="showDeleteConfirm('${member.id}')">✕ Hapus</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function closeModal() { document.getElementById('modal').style.display='none'; document.getElementById('modal').innerHTML=''; }
+
+function showDeleteConfirm(id) {
+  const m=members[id]; if(!m) return;
+  closeModal();
+  const modal=document.getElementById('modal'); modal.style.display='block';
+  modal.innerHTML=`<div class="modal-overlay" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()" style="text-align:center;">
+    <div class="modal-name">Hapus Anggota?</div>
+    <div class="modal-rule"></div>
+    <p style="color:var(--parchment-light);font-size:13px;margin-bottom:20px;">${m.nama}</p>
+    <p style="color:var(--parchment-dark);font-style:italic;font-size:12px;margin-bottom:20px;">Data akan masuk Pending dan menunggu persetujuan Admin.</p>
+    <div class="modal-actions">
+      <button class="modal-del-btn" onclick="doDelete('${id}')">✕ Ya, Hapus</button>
+      <button class="modal-edit-btn" onclick="closeModal()">Batal</button>
+    </div>
+  </div></div>`;
+}
+
+async function doDelete(id) {
+  closeModal();
+  const res = await submitPending('Hapus',{id});
+  showToast(res.status==='ok'?'Permintaan hapus terkirim':res.message);
+}
+
+// ══════════════════════════════════════
+// FORM TAMBAH / EDIT
+// ══════════════════════════════════════
+function switchTab(tab) {
+  ['pohon','tambah','admin'].forEach(t=>{
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
+    document.getElementById('btn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab);
+  });
+  if (tab==='tambah') renderFormTambah(null);
+  if (tab==='admin') renderAdminLogin();
+}
+
+function renderFormTambah(editMember) {
+  const f=editMember||{};
+  const males=Object.values(members).filter(m=>m.gender==='L');
+  const females=Object.values(members).filter(m=>m.gender==='P');
+  const myRelasi = editMember ? relasi.find(r=>r.idAnak===editMember.id) : null;
+
+  document.getElementById('tabTambah').innerHTML=`
+  <div class="page">
+    <div class="page-title">✦ ${editMember?'Edit Anggota':'Tambah Anggota'} ✦</div>
+    ${['nama','tahunLahir','tahunMeninggal','desa','kontak','catatan'].map(k=>`
+    <div class="form-group">
+      <label class="form-label">${{nama:'Nama *',tahunLahir:'Tahun Lahir',tahunMeninggal:'Tahun Meninggal',desa:'Desa/Kecamatan',kontak:'No. Kontak',catatan:'Catatan'}[k]}</label>
+      <input class="form-input" id="f_${k}" type="${['tahunLahir','tahunMeninggal'].includes(k)?'number':'text'}" value="${f[k]||''}" placeholder="${{nama:'Nama lengkap',tahunLahir:'cth: 1960',tahunMeninggal:'Kosongkan jika masih hidup',desa:'Asal daerah',kontak:'Opsional',catatan:'Opsional'}[k]}"/>
+    </div>`).join('')}
+    <div class="form-group">
+      <label class="form-label">Jenis Kelamin</label>
+      <select class="form-select" id="f_gender">
+        <option value="L" ${(f.gender||'L')==='L'?'selected':''}>Laki-laki</option>
+        <option value="P" ${f.gender==='P'?'selected':''}>Perempuan</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ayah</label>
+      <select class="form-select" id="f_idAyah">
+        <option value="">— Tidak diketahui —</option>
+        ${males.map(m=>`<option value="${m.id}" ${myRelasi?.idAyah===m.id?'selected':''}>${m.nama}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ibu</label>
+      <select class="form-select" id="f_idIbu">
+        <option value="">— Tidak diketahui —</option>
+        ${females.map(m=>`<option value="${m.id}" ${myRelasi?.idIbu===m.id?'selected':''}>${m.nama}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-hint">* Data akan masuk <span style="color:var(--gold)">Pending</span> dan menunggu persetujuan Admin.</div>
+    <button class="btn-submit" onclick="doSubmitForm(${editMember?`'${editMember.id}'`:null})">✦ Kirim untuk Disetujui ✦</button>
+  </div>`;
+}
+
+async function doSubmitForm(editId) {
+  const g = id => document.getElementById(id)?.value||'';
+  const data = {nama:g('f_nama'),gender:g('f_gender'),tahunLahir:g('f_tahunLahir'),tahunMeninggal:g('f_tahunMeninggal'),desa:g('f_desa'),kontak:g('f_kontak'),catatan:g('f_catatan'),idAyah:g('f_idAyah'),idIbu:g('f_idIbu')};
+  if (!data.nama.trim()) { showToast('Nama wajib diisi!'); return; }
+  if (editId) data.id=editId;
+  const res = await submitPending(editId?'Edit':'Tambah', data);
+  showToast(res.status==='ok'?'✦ Permintaan terkirim':res.message);
+  if (res.status==='ok') switchTab('pohon');
+}
+
+function showEditForm(id) { closeModal(); renderFormTambah(members[id]); switchTab('tambah'); }
+
+// ══════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════
+function renderAdminLogin() {
+  document.getElementById('tabAdmin').innerHTML=`
+  <div class="page">
+    <div class="pin-wrap">
+      <div style="font-size:36px;margin-bottom:12px;">🔐</div>
+      <div class="pin-title">Masukkan PIN Admin</div>
+      <input class="login-input" id="adminPinInput" type="password" maxlength="6" placeholder="••••" style="width:140px;display:block;margin:0 auto 12px;"/>
+      <button class="btn-submit" style="width:auto;padding:9px 28px;display:block;margin:0 auto;" onclick="loadPending()">Masuk</button>
+    </div>
+  </div>`;
+}
+
+function renderAdmin(pin) {
+  const tab=document.getElementById('tabAdmin');
+  tab.innerHTML=`
+  <div class="page">
+    <div class="page-title">✦ Panel Admin ✦</div>
+    <div style="text-align:center;color:var(--parchment-dark);font-size:13px;font-style:italic;margin-bottom:18px;">${pendingList.length} data menunggu persetujuan</div>
+    <div id="pendingList">
+    ${pendingList.length===0?'<div class="empty-msg">✦ Tidak ada data pending ✦</div>':
+      pendingList.map(p=>`
+      <div class="pending-card">
+        <span class="ptag ${p.tipe.toLowerCase()}">${p.tipe}</span>
+        <div class="pending-name">${p.data.nama||p.data.id||'–'}</div>
+        <div class="pending-meta">${p.data.gender==='L'?'Laki-laki':'Perempuan'}${p.data.tahunLahir?' · '+p.data.tahunLahir:''}${p.data.desa?' · '+p.data.desa:''}</div>
+        <div style="font-size:10px;color:var(--parchment-dark);font-style:italic;margin-top:4px;">${new Date(p.timestamp).toLocaleString('id-ID')}</div>
+        <div class="pending-btns">
+          <button class="btn-ok" onclick="approve('${p.idPending}','${pin}')">✓ Setujui</button>
+          <button class="btn-no" onclick="reject('${p.idPending}','${pin}')">✕ Tolak</button>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function updateBadge() {
+  const badge=document.getElementById('adminBadge');
+  badge.style.display=pendingList.length?'flex':'none';
+  badge.textContent=pendingList.length;
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+let toastTimer=null;
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.style.display='none',3000);
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+document.getElementById('loginBtn').onclick=login;
+document.getElementById('loginPw').onkeydown=e=>{if(e.key==='Enter')login();};
+document.getElementById('settBtn').onclick=()=>document.getElementById('settPanel').classList.toggle('open');
+document.addEventListener('click',e=>{if(!e.target.closest('#settPanel')&&!e.target.closest('#settBtn'))document.getElementById('settPanel').classList.remove('open');});
+window.addEventListener('resize',()=>{if(currentBg!=='none')startBgAnimation(currentBg);});
+
+initTheme();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done"
+Output
+
+Done
+Done
