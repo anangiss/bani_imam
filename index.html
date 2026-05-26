@@ -21,44 +21,111 @@
   --gold-glow:rgba(212,168,71,0.5);
   --ember:#8b2500;
   --ash:#3a3028;
-  --bg-solid:#2a1a0a;
+  --bg-solid:#f8f8f8;
+  --card-bg:rgba(255,255,255,0.95);
+  --card-border:rgba(180,140,60,0.3);
+  --input-bg:rgba(255,255,255,0.9);
+  --navbar-bg:rgba(255,255,255,0.97);
+  --overlay-bg:rgba(0,0,0,0.35);
+  --shadow:rgba(0,0,0,0.12);
 }
-body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;background:var(--bg-solid);}
 
+/* ── TEMA TERANG (default) ── */
+body.theme-terang{
+  --bg-solid:#f8f8f8;
+  --parchment:#5a3a10;
+  --parchment-light:#2a1505;
+  --parchment-dark:#7a5a20;
+  --gold:#8b6000;
+  --gold-glow:rgba(139,96,0,0.3);
+  --ink:#1a0e04;
+  --ember:#8b2500;
+  --card-bg:rgba(255,255,255,0.97);
+  --card-border:rgba(139,96,0,0.25);
+  --input-bg:#ffffff;
+  --navbar-bg:rgba(255,255,255,0.98);
+  --overlay-bg:rgba(0,0,0,0.04);
+  --shadow:rgba(0,0,0,0.1);
+}
+
+/* ── TEMA MAHONI GELAP ── */
+body.theme-mahoni{
+  --bg-solid:#2a1a0a;
+  --parchment:#c8a96e;
+  --parchment-light:#e8d4a8;
+  --parchment-dark:#8b6914;
+  --gold:#d4a847;
+  --gold-glow:rgba(212,168,71,0.5);
+  --ink:#1a0e04;
+  --ember:#8b2500;
+  --card-bg:rgba(42,26,8,0.97);
+  --card-border:rgba(212,168,71,0.4);
+  --input-bg:rgba(26,14,4,0.8);
+  --navbar-bg:rgba(20,10,2,0.97);
+  --overlay-bg:rgba(0,0,0,0.45);
+  --shadow:rgba(0,0,0,0.4);
+}
+
+/* ── TEMA GELAP NU-MUHAMMADIYAH ── */
+body.theme-gelap{
+  --bg-solid:#0d1f14;
+  --parchment:#a8c8a0;
+  --parchment-light:#d4e8cc;
+  --parchment-dark:#6a9860;
+  --gold:#f0c040;
+  --gold-glow:rgba(240,192,64,0.5);
+  --ink:#061209;
+  --ember:#1a4a8a;
+  --card-bg:rgba(13,31,20,0.97);
+  --card-border:rgba(240,192,64,0.35);
+  --input-bg:rgba(6,18,9,0.85);
+  --navbar-bg:rgba(8,20,13,0.98);
+  --overlay-bg:rgba(0,0,0,0.5);
+  --shadow:rgba(0,0,0,0.5);
+}
+body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;background:var(--bg-solid);transition:background 0.3s,color 0.3s;}
 /* ── BACKGROUND SYSTEM ── */
 .app{min-height:100vh;position:relative;}
 .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .bg-layer canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0.18;}
-.bg-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:rgba(0,0,0,0.45);}
+.bg-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:var(--overlay-bg);}
 
 /* ── SETTINGS PANEL ── */
 .settings-btn{
   position:fixed;top:12px;right:12px;z-index:150;
-  background:rgba(26,14,4,0.85);border:1px solid rgba(212,168,71,0.4);
+  background:var(--card-bg);border:1px solid var(--card-border);
   color:var(--gold);font-size:18px;width:36px;height:36px;
   border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
+  backdrop-filter:blur(4px);transition:all 0.3s;
 }
 .settings-panel{
   position:fixed;top:56px;right:12px;z-index:150;
-  background:rgba(20,10,2,0.97);border:1px solid rgba(212,168,71,0.4);
+  background:var(--card-bg);border:1px solid var(--card-border);
   padding:14px;width:220px;
   backdrop-filter:blur(8px);
-  display:none;
+  display:none;transition:all 0.3s;
 }
 .settings-panel.open{display:block;}
 .sett-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--parchment-dark);text-transform:uppercase;margin-bottom:8px;}
 .swatch-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
 .swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.2s;}
 .swatch.active{border-color:var(--gold);transform:scale(1.15);}
+.theme-btn{
+  display:block;width:100%;text-align:left;
+  background:transparent;border:1px solid var(--card-border);
+  color:var(--parchment);font-family:'Cinzel',serif;font-size:10px;
+  letter-spacing:1px;padding:8px 12px;cursor:pointer;margin-bottom:6px;
+  transition:all 0.2s;border-radius:4px;
+}
+.theme-btn:hover,.theme-btn.active{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:bold;}
 .bg-btn{
   display:block;width:100%;text-align:left;
-  background:rgba(255,255,255,0.04);border:1px solid rgba(212,168,71,0.15);
-  color:var(--parchment-light);font-family:'Cinzel',serif;font-size:9px;
+  background:transparent;border:1px solid var(--card-border);
+  color:var(--parchment);font-family:'Cinzel',serif;font-size:9px;
   letter-spacing:1px;padding:7px 10px;cursor:pointer;margin-bottom:5px;
   transition:all 0.2s;
 }
-.bg-btn:hover,.bg-btn.active{background:rgba(212,168,71,0.12);border-color:rgba(212,168,71,0.4);color:var(--gold);}
+.bg-btn:hover,.bg-btn.active{background:rgba(212,168,71,0.12);border-color:var(--gold);color:var(--gold);}
 
 /* ── LOGIN ── */
 .login-wrap{
@@ -66,9 +133,9 @@ body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;back
   position:relative;z-index:10;padding:20px;
 }
 .login-box{
-  background:linear-gradient(160deg,rgba(42,26,8,0.97),rgba(26,14,4,0.97));
+  background:var(--card-bg);
   border:1px solid var(--gold);
-  box-shadow:0 0 40px rgba(212,168,71,0.15);
+  box-shadow:0 0 40px var(--shadow);
   padding:32px 24px;width:100%;max-width:320px;text-align:center;
 }
 .login-crest{font-size:40px;margin-bottom:12px;filter:drop-shadow(0 0 12px var(--gold-glow));}
@@ -76,7 +143,7 @@ body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;back
 .login-sub{font-size:12px;color:var(--parchment-dark);font-style:italic;margin-bottom:24px;}
 .login-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-bottom:20px;}
 .login-input{
-  width:100%;background:rgba(26,14,4,0.8);border:1px solid rgba(212,168,71,0.3);
+  width:100%;background:var(--input-bg);border:1px solid var(--card-border);
   color:var(--parchment-light);padding:10px 14px;font-family:'IM Fell English',serif;
   font-size:15px;outline:none;text-align:center;letter-spacing:3px;margin-bottom:10px;
 }
@@ -99,13 +166,13 @@ body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;back
 .header-rule-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
 
 /* ── TREE ── */
-.tree-scroll{overflow:auto;padding:12px 20px 100px;position:relative;z-index:1;-webkit-overflow-scrolling:touch;}
-.tree-zoom-wrap{display:inline-flex;min-width:max-content;transform-origin:top center;transition:transform 0.2s ease;}
-.tree-root{display:flex;flex-direction:column;align-items:center;min-width:max-content;margin:0 auto;}
+.tree-scroll{overflow:auto;padding:12px 0 100px;position:relative;z-index:1;-webkit-overflow-scrolling:touch;width:100%;}
+.tree-zoom-wrap{min-width:100%;width:max-content;transform-origin:top center;transition:transform 0.2s ease;display:flex;justify-content:center;}
+.tree-root{display:flex;flex-direction:column;align-items:center;width:max-content;padding:0 60px;}
 .zoom-btns{position:fixed;bottom:72px;right:12px;z-index:120;display:flex;flex-direction:column;gap:6px;}
 .zoom-btn{width:34px;height:34px;border-radius:50%;background:rgba(20,10,2,0.9);border:1px solid rgba(212,168,71,0.5);color:var(--gold);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);line-height:1;}
-.node-wrap{display:flex;flex-direction:column;align-items:center;}
-.couple-group{display:flex;align-items:flex-end;position:relative;}
+.node-wrap{display:flex;flex-direction:column;align-items:center;min-width:max-content;}
+.couple-group{display:flex;align-items:flex-end;position:relative;min-width:max-content;}
 .portrait{display:flex;flex-direction:column;align-items:center;width:80px;cursor:pointer;position:relative;animation:portraitReveal 0.7s ease forwards;opacity:0;}
 @keyframes portraitReveal{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
 .portrait-frame{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
@@ -125,8 +192,10 @@ body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;back
 @keyframes drawVine{to{stroke-dashoffset:0;}}
 .vine-leaf{fill:rgba(80,120,40,0.6);}
 .children-area{display:flex;flex-direction:column;align-items:center;position:relative;}
-.children-row{display:flex;align-items:flex-start;position:relative;}
-.child-slot{display:flex;flex-direction:column;align-items:center;padding:0 6px;}
+.children-row{display:flex;align-items:flex-start;position:relative;min-width:max-content;}
+.children-row::before{content:'';position:absolute;top:0;left:calc(40px + 6px);right:calc(40px + 6px);height:1.5px;background:var(--parchment-dark);}
+.child-slot{display:flex;flex-direction:column;align-items:center;padding:0 6px;min-width:max-content;position:relative;}
+.child-slot::before{content:'';position:absolute;top:0;left:50%;width:1.5px;height:40px;background:var(--parchment-dark);transform:translateX(-50%);}
 
 /* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(10,5,0,0.88);display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;backdrop-filter:blur(6px);animation:fadeIn 0.2s ease;}
@@ -180,11 +249,11 @@ body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;back
 .empty-msg{text-align:center;padding:40px;color:var(--parchment-dark);font-style:italic;}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#2a1a08,#1a0e04);border:1px solid var(--gold);color:var(--gold);padding:10px 22px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;z-index:300;white-space:nowrap;box-shadow:0 0 20px rgba(212,168,71,0.3);animation:toastIn 0.3s ease;}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:var(--card-bg);border:1px solid var(--gold);color:var(--gold);padding:10px 22px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;z-index:300;white-space:nowrap;box-shadow:0 0 20px var(--shadow);animation:toastIn 0.3s ease;}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
 
 /* ── BOTTOM NAV ── */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,5,0,0.96);border-top:1px solid rgba(212,168,71,0.3);display:flex;backdrop-filter:blur(10px);z-index:100;}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--navbar-bg);border-top:1px solid var(--card-border);display:flex;backdrop-filter:blur(10px);z-index:100;}
 .bnav-btn{flex:1;padding:10px 8px;background:none;border:none;color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.3s;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;}
 .bnav-btn.active{color:var(--gold);}
 .bnav-icon{font-size:16px;line-height:1;}
@@ -199,8 +268,12 @@ body{font-family:'IM Fell English',serif;min-height:100vh;overflow-x:hidden;back
   <!-- Settings Button -->
   <button class="settings-btn" id="settBtn" title="Tema">⚙</button>
   <div class="settings-panel" id="settPanel">
-    <div class="sett-title">Warna Latar</div>
-    <div class="swatch-row" id="colorSwatches"></div>
+    <div class="sett-title">Tema Tampilan</div>
+    <div id="themeBtns" style="margin-bottom:12px;">
+      <button class="theme-btn" data-theme="theme-terang" onclick="applyTheme('theme-terang')">☀️ Terang</button>
+      <button class="theme-btn" data-theme="theme-mahoni" onclick="applyTheme('theme-mahoni')">🕯️ Mahoni</button>
+      <button class="theme-btn" data-theme="theme-gelap" onclick="applyTheme('theme-gelap')">🌙 Gelap</button>
+    </div>
     <div class="sett-title">Motif Latar</div>
     <div id="bgBtns"></div>
   </div>
@@ -271,18 +344,6 @@ const ASAL_DAERAH   = 'Jombang';
 // ══════════════════════════════════════
 // TEMA
 // ══════════════════════════════════════
-const COLORS = [
-  {name:'Mahoni Gelap', val:'#2a1a0a'},
-  {name:'Coklat Tua',   val:'#3b1f0a'},
-  {name:'Hijau Lumut',  val:'#1a2e10'},
-  {name:'Ungu Gelap',   val:'#160a22'},
-  {name:'Putih Bersih', val:'#ffffff'},
-  {name:'Krem Lembut',  val:'#f5f0e8'},
-  {name:'Putih Susu',   val:'#f8f4ed'},
-  {name:'Biru Langit',  val:'#e8f0fc'},
-  {name:'Hijau Mint',   val:'#e8f5ee'},
-  {name:'Putih Hijau',  val:'#f0faf4'},
-];
 const BACKGROUNDS = [
   {name:'Polos',         key:'none'},
   {name:'Bunga Melati',  key:'flowers'},
@@ -292,27 +353,26 @@ const BACKGROUNDS = [
   {name:'Daun Jatuh',    key:'leaves'},
 ];
 
-let currentColor = '#2a1a0a';
+let currentTheme = 'theme-terang';
 let currentBg = 'none';
 let bgAnimFrame = null;
 
-function initTheme() {
-  // color swatches
-  const row = document.getElementById('colorSwatches');
-  COLORS.forEach(c => {
-    const s = document.createElement('div');
-    s.className = 'swatch' + (c.val === currentColor ? ' active' : '');
-    s.style.background = c.val;
-    s.title = c.name;
-    s.onclick = () => {
-      currentColor = c.val;
-      document.documentElement.style.setProperty('--bg-solid', c.val);
-      document.body.style.background = c.val;
-      row.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
-      s.classList.add('active');
-    };
-    row.appendChild(s);
+function applyTheme(theme) {
+  document.body.classList.remove('theme-terang','theme-mahoni','theme-gelap');
+  document.body.classList.add(theme);
+  currentTheme = theme;
+  localStorage.setItem('bani_theme', theme);
+  // Update active button
+  document.querySelectorAll('.theme-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.theme===theme);
   });
+}
+
+function initTheme() {
+  // Restore tema tersimpan, default terang
+  const saved = localStorage.getItem('bani_theme')||'theme-terang';
+  applyTheme(saved);
+
   // bg buttons
   const btns = document.getElementById('bgBtns');
   BACKGROUNDS.forEach(b => {
@@ -431,6 +491,7 @@ function startBgAnimation(key) {
 let SESSION_PW = '';
 let members = {};
 let relasi = [];
+let pasangan = []; // {idSuami, idIstri, urutan}
 let pendingList = [];
 let adminOpen = false;
 
@@ -441,8 +502,8 @@ function callAPI(params) {
 
 // ── CACHE HELPERS ──
 const CACHE_KEY = 'silsilah_cache';
-function saveCache(anggota, silsilah) {
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify({anggota, silsilah, ts: Date.now()})); } catch(e) {}
+function saveCache(anggota, silsilah, psng) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({anggota, silsilah, pasangan:psng||[], ts: Date.now()})); } catch(e) {}
 }
 function loadCache() {
   try { const c = localStorage.getItem(CACHE_KEY); return c ? JSON.parse(c) : null; } catch(e) { return null; }
@@ -467,6 +528,7 @@ async function login() {
     members = {};
     cache.anggota.forEach(m => members[m.id]=m);
     relasi = cache.silsilah;
+    pasangan = cache.pasangan||[];
     renderTree();
     // Verifikasi password & update data di background
     loadData(true);
@@ -500,7 +562,8 @@ async function loadData(silent=false) {
       members = {};
       res.anggota.forEach(m => members[m.id]=m);
       relasi = res.silsilah;
-      saveCache(res.anggota, res.silsilah);
+      pasangan = res.pasangan||[];
+      saveCache(res.anggota, res.silsilah, pasangan);
       renderTree();
       if (silent) showToast('✦ Data diperbarui');
     } else if (res.status==='error' && silent) {
@@ -551,27 +614,52 @@ function buildTree() {
   const childSet = new Set(relasi.map(r=>r.idAnak));
   const coupleMap = {};
   relasi.forEach(r => {
-    const key=r.idAyah+'|'+r.idIbu;
-    if (!coupleMap[key]) coupleMap[key]={ayahId:r.idAyah,ibuId:r.idIbu,anakIds:[]};
+    const key=r.idAyah+'|'+(r.idIbu||'');
+    if (!coupleMap[key]) coupleMap[key]={ayahId:r.idAyah,ibuId:r.idIbu||null,anakIds:[]};
     coupleMap[key].anakIds.push(r.idAnak);
   });
+
+  // Tambah pasangan dari sheet Pasangan (walau belum punya anak bersama)
+  pasangan.forEach(p => {
+    const key=p.idSuami+'|'+p.idIstri;
+    if (!coupleMap[key]) coupleMap[key]={ayahId:p.idSuami,ibuId:p.idIstri,anakIds:[]};
+  });
+
+  // Helper: semua istri dari seorang suami
+  function spousesOf(id) {
+    return pasangan.filter(p=>p.idSuami===id).sort((a,b)=>(a.urutan||1)-(b.urutan||1));
+  }
 
   function nodeFor(id, visited=new Set()) {
     if (visited.has(id)) return null;
     visited.add(id);
     const m = members[id]; if (!m) return null;
-    const couple = Object.values(coupleMap).find(c=>c.ayahId===id||c.ibuId===id);
-    const spouseId = couple?(couple.ayahId===id?couple.ibuId:couple.ayahId):null;
+    // Kumpulkan semua pasangan (bisa >1)
+    const spouseList = m.gender==='L'
+      ? spousesOf(id).map(p=>members[p.idIstri]).filter(Boolean)
+      : pasangan.filter(p=>p.idIstri===id).map(p=>members[p.idSuami]).filter(Boolean);
+    // Anak dari semua pasangan
+    const allChildren = [];
+    Object.values(coupleMap).forEach(c=>{
+      if (c.ayahId===id || c.ibuId===id) {
+        c.anakIds.forEach(cid=>{ if (!allChildren.includes(cid)) allChildren.push(cid); });
+      }
+    });
     return {
-      member:m, spouseId, spouse:spouseId?members[spouseId]:null,
-      children:(couple?couple.anakIds:[]).map(cid=>nodeFor(cid,new Set(visited))).filter(Boolean)
+      member:m,
+      spouseList, // array, bisa kosong
+      spouse: spouseList[0]||null, // backward compat untuk render
+      children: allChildren.map(cid=>nodeFor(cid,new Set(visited))).filter(Boolean)
     };
   }
 
   const roots = Object.keys(members).filter(id=>!childSet.has(id));
   const rootAyahs = roots.filter(id=>Object.values(coupleMap).some(c=>c.ayahId===id));
   const rootSingles = roots.filter(id=>!Object.values(coupleMap).some(c=>c.ayahId===id||c.ibuId===id));
-  return [...rootAyahs,...rootSingles].map(id=>nodeFor(id));
+  // Hilangkan istri dari root (mereka tampil di samping suami)
+  const spouseIds = new Set(pasangan.map(p=>p.idIstri));
+  const filtered = [...rootAyahs,...rootSingles].filter(id=>!spouseIds.has(id)||!roots.includes(id));
+  return filtered.map(id=>nodeFor(id));
 }
 
 function renderTree() {
@@ -609,6 +697,13 @@ function createNodeEl(node, depth=0, delay=0) {
 
   cg.appendChild(createPortraitEl(member,delay));
   if (spouse) { const gap=document.createElement('div'); gap.style.width=COUPLE_GAP+'px'; cg.appendChild(gap); cg.appendChild(createPortraitEl(spouse,delay+100)); }
+  // Istri ke-2, ke-3, dst (spouseList[1+])
+  if (node.spouseList && node.spouseList.length>1) {
+    node.spouseList.slice(1).forEach((sp,si)=>{
+      const gap2=document.createElement('div'); gap2.style.width=COUPLE_GAP+'px'; cg.appendChild(gap2);
+      cg.appendChild(createPortraitEl(sp,delay+200+si*100));
+    });
+  }
   wrap.appendChild(cg);
 
   if (children && children.length) {
@@ -626,42 +721,12 @@ function createNodeEl(node, depth=0, delay=0) {
 
     const totalChildW = children.length*(NODE_W+CHILD_PAD*2);
     const row = document.createElement('div'); row.className='children-row'; row.style.position='relative';
-
-    if (children.length>1) {
-      // Hitung offset agar garis horizontal simetris di bawah couple center
-      const hSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-      hSvg.setAttribute('width', Math.max(totalChildW, coupleW));
-      hSvg.setAttribute('height',V_STEM);
-      hSvg.style.cssText='position:absolute;top:0;left:50%;transform:translateX(-50%);overflow:visible;pointer-events:none;';
-      const halfTotal = totalChildW/2;
-      const hPath=document.createElementNS('http://www.w3.org/2000/svg','path');
-      hPath.setAttribute('class','vine-descent');
-      // Garis dari child pertama ke child terakhir, diposisikan relatif terhadap center
-      const x1 = (Math.max(totalChildW,coupleW)/2) - halfTotal + NODE_W/2+CHILD_PAD;
-      const x2 = (Math.max(totalChildW,coupleW)/2) + halfTotal - NODE_W/2-CHILD_PAD;
-      hPath.setAttribute('d',`M ${x1} 0 H ${x2}`);
-      hPath.style.animationDelay=(delay+400)+'ms';
-      hSvg.appendChild(hPath);
-      children.forEach((_,i)=>{
-        const cx = (Math.max(totalChildW,coupleW)/2) - halfTotal + (NODE_W/2)+CHILD_PAD+i*(NODE_W+CHILD_PAD*2);
-        const dp=document.createElementNS('http://www.w3.org/2000/svg','path');
-        dp.setAttribute('class','vine-descent');
-        dp.setAttribute('d',curvePath(cx,0,cx,V_STEM));
-        dp.style.animationDelay=(delay+450+i*60)+'ms';
-        hSvg.appendChild(dp);
-      });
-      row.appendChild(hSvg);
-    }
+    // Garis horizontal & vertikal ke anak pakai CSS (::before di children-row dan child-slot)
 
     children.forEach((child,i)=>{
       const slot=document.createElement('div'); slot.className='child-slot';
-      if (children.length===1) {
-        const ss=document.createElementNS('http://www.w3.org/2000/svg','svg');
-        ss.setAttribute('width','2'); ss.setAttribute('height',V_STEM); ss.style.overflow='visible';
-        const sp=document.createElementNS('http://www.w3.org/2000/svg','path');
-        sp.setAttribute('class','vine-descent'); sp.setAttribute('d',`M 1 0 C 1 ${V_STEM*0.4}, 1 ${V_STEM*0.6}, 1 ${V_STEM}`);
-        sp.style.animationDelay=(delay+400)+'ms'; ss.appendChild(sp); slot.appendChild(ss);
-      } else { const sp=document.createElement('div'); sp.style.height=V_STEM+'px'; slot.appendChild(sp); }
+      // Spacer untuk jarak vertikal (garis vertikal pakai CSS ::before)
+      const sp=document.createElement('div'); sp.style.height=V_STEM+'px'; slot.appendChild(sp);
       slot.appendChild(createNodeEl(child,depth+1,delay+500+i*100));
       row.appendChild(slot);
     });
@@ -686,12 +751,24 @@ function createPortraitEl(member, delay=0) {
 function showModal(member) {
   const dead=!!member.tahunMeninggal;
   const cls=dead?'deceased':(member.gender==='L'?'male':'female');
-  // Cari pasangan dari relasi
-  const coupleAsAyah = relasi.find(r=>r.idAyah===member.id);
-  const coupleAsIbu  = relasi.find(r=>r.idIbu===member.id);
-  const spouseId = coupleAsAyah?coupleAsAyah.idIbu : (coupleAsIbu?coupleAsIbu.idAyah:null);
-  const spouse = spouseId?members[spouseId]:null;
+  // Cari semua pasangan dari sheet Pasangan
+  const spouseList = member.gender==='L'
+    ? pasangan.filter(p=>p.idSuami===member.id).sort((a,b)=>(a.urutan||1)-(b.urutan||1)).map(p=>members[p.idIstri]).filter(Boolean)
+    : pasangan.filter(p=>p.idIstri===member.id).map(p=>members[p.idSuami]).filter(Boolean);
   const spouseLabel = member.gender==='L'?'Istri':'Suami';
+
+  const rows = [
+    ['Jenis Kelamin', member.gender==='L'?'Laki-laki':'Perempuan', true],
+    [spouseLabel, spouseList.length
+      ? spouseList.map((sp,i)=>`<span style="cursor:pointer;color:var(--gold);text-decoration:underline dotted;" onclick="closeModal();setTimeout(()=>showModal(members['${sp.id}']),50)">${sp.nama}</span>`).join(', ')
+      : null, false],
+    ['Tahun Lahir', member.tahunLahir||null, false],
+    ['Tahun Meninggal', dead?(member.tahunMeninggal||null):null, false], // sembunyikan kalau hidup
+    ['Asal', member.desa||null, false],
+    ['No. Kontak', member.kontak||null, false],
+    ['Catatan', member.catatan||null, false],
+  ].filter(([,v,force])=>force||v); // sembunyikan kalau kosong & tidak force
+
   const modal=document.getElementById('modal');
   modal.style.display='block';
   modal.innerHTML=`
@@ -701,22 +778,57 @@ function showModal(member) {
       <div class="portrait-frame ${cls}" style="width:72px;height:72px;margin:0 auto 14px;font-family:Cinzel,serif;font-size:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;">${member.nama.charAt(0)}</div>
       <div class="modal-name">${member.nama}</div>
       <div class="modal-rule"></div>
-      ${[
-        ['Jenis Kelamin', member.gender==='L'?'Laki-laki':'Perempuan'],
-        [spouseLabel, spouse?`<span style="cursor:pointer;color:var(--gold);text-decoration:underline dotted;" onclick="closeModal();setTimeout(()=>showModal(members['${spouseId}']),50)">${spouse.nama}</span>`:'–'],
-        ['Tahun Lahir', member.tahunLahir||'–'],
-        ['Tahun Meninggal', member.tahunMeninggal||'–'],
-        ['Asal', member.desa||'–'],
-        ['No. Kontak', member.kontak||'–'],
-        ['Catatan', member.catatan||'–'],
-      ].map(([l,v])=>`<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value">${v}</span></div>`).join('')}
+      ${rows.map(([l,v])=>`<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value">${v}</span></div>`).join('')}
       ${dead?'<div class="modal-epitaph">✦ Semoga husnul khatimah ✦</div>':''}
       <div class="modal-actions">
+        <button class="modal-edit-btn" onclick="showTambahPasangan('${member.id}')">♥ Tambah ${spouseLabel}</button>
         <button class="modal-edit-btn" onclick="showEditForm('${member.id}')">✎ Edit</button>
         <button class="modal-del-btn" onclick="showDeleteConfirm('${member.id}')">✕ Hapus</button>
       </div>
     </div>
   </div>`;
+}
+
+function showTambahPasangan(memberId) {
+  const m = members[memberId]; if (!m) return;
+  const spouseLabel = m.gender==='L'?'Istri':'Suami';
+  const oppositeGender = m.gender==='L'?'P':'L';
+  // Daftar anggota lawan gender, belum jadi pasangan
+  const sudahPasangan = m.gender==='L'
+    ? pasangan.filter(p=>p.idSuami===memberId).map(p=>p.idIstri)
+    : pasangan.filter(p=>p.idIstri===memberId).map(p=>p.idSuami);
+  const kandidat = Object.values(members).filter(x=>x.gender===oppositeGender && !sudahPasangan.includes(x.id) && x.id!==memberId);
+
+  const modal=document.getElementById('modal');
+  modal.style.display='block';
+  modal.innerHTML=`
+  <div class="modal-overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-name">♥ Tambah ${spouseLabel}</div>
+      <div class="modal-rule"></div>
+      <p style="color:var(--parchment-dark);font-style:italic;font-size:12px;margin-bottom:14px;">Pilih ${spouseLabel.toLowerCase()} untuk <b style="color:var(--gold)">${m.nama}</b>, atau tambah anggota baru dulu.</p>
+      <div style="max-height:260px;overflow-y:auto;">
+        ${kandidat.length===0?`<p style="color:var(--parchment-dark);text-align:center;font-size:13px;">Tidak ada kandidat tersedia.<br>Tambah anggota baru dulu.</p>`
+          :kandidat.map(k=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(212,168,71,0.1);cursor:pointer;" onclick="doTambahPasangan('${memberId}','${k.id}')">
+            <div class="portrait-frame ${k.gender==='L'?'male':'female'}" style="width:36px;height:36px;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;font-family:Cinzel,serif;">${k.nama.charAt(0)}</div>
+            <div><div style="color:var(--parchment-light);font-size:13px;">${k.nama}</div><div style="color:var(--parchment-dark);font-size:11px;">${k.desa||''}</div></div>
+          </div>`).join('')}
+      </div>
+      <div style="margin-top:14px;">
+        <button class="modal-edit-btn" onclick="closeModal()">Batal</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function doTambahPasangan(idSuami, idIstri) {
+  // Hitung urutan (berapa istri sudah ada)
+  const urutan = pasangan.filter(p=>p.idSuami===idSuami).length + 1;
+  closeModal();
+  const res = await submitPending('TambahPasangan', {idSuami, idIstri, urutan});
+  showToast(res.status==='ok'?'✦ Permintaan pasangan terkirim, menunggu Admin':res.message);
 }
 
 function closeModal() { document.getElementById('modal').style.display='none'; document.getElementById('modal').innerHTML=''; }
